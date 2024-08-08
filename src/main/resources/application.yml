@@ -14,3 +14,14 @@ eureka:
       defaultZone: ${EUREKA_URL:http://localhost:8081/eureka}
 server:
   port: 0
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 3
+        minimumNumberOfCalls: 2
+        waitDurationInOpenState: 10s
+    instances:
+      confirmPayment:
+        waitDurationInOpenState: 50s

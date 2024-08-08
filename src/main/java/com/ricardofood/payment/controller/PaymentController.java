@@ -2,6 +2,7 @@ package com.ricardofood.payment.controller;
 
 import com.ricardofood.payment.dto.PaymentDto;
 import com.ricardofood.payment.service.PaymentService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +53,14 @@ public class PaymentController {
     }
 
     @PatchMapping("{id}/confirm")
-    public ResponseEntity<PaymentDto> confirmPayment(@PathVariable @NotNull Long id) {
+    @CircuitBreaker(name = "confirmPayment", fallbackMethod = "confirmPaymentFallback")
+    public void confirmPayment(@PathVariable @NotNull Long id) {
         service.confirmPayment(id);
-        return ResponseEntity.ok().build();
     }
+
+    public void confirmPaymentFallback(Long id, Exception e) {
+        service.confirmPaymentFallback(id);
+    }
+
+
 }

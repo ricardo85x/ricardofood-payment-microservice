@@ -68,4 +68,9 @@ public class PaymentService {
     }
 
 
+    public void confirmPaymentFallback(Long id) {
+        var payment = this.findById(id);
+        payment.setStatus(Status.APPROVED_WITHOUT_INVOICE);
+        repository.save(payment);
+    }
 }
