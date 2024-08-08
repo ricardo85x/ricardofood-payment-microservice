@@ -3,5 +3,6 @@ package com.ricardofood.payment.enums;
 public enum Status {
     CREATED,
     APPROVED,
-    CANCELLED
+    APPROVED_WITHOUT_INVOICE,
+    CANCELLED,
 }
