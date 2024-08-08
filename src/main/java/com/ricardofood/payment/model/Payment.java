@@ -49,7 +49,7 @@ public class Payment {
     private Status status;
 
     @NotNull
-    private String orderId;
+    private Long orderId;
 
     @NotNull
     private String paymentMethod;
