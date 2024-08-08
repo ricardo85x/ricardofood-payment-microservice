@@ -1,6 +1,7 @@
 package com.ricardofood.payment.service;
 
 import com.ricardofood.payment.dto.PaymentDto;
+import com.ricardofood.payment.http.OrderClient;
 import com.ricardofood.payment.model.Payment;
 import com.ricardofood.payment.enums.Status;
 import com.ricardofood.payment.repository.PaymentRepository;
@@ -19,6 +20,9 @@ public class PaymentService {
 
     @Autowired
     private ModelMapper mapper;
+
+    @Autowired
+    private OrderClient orderClient;
 
     public Page<PaymentDto> findAll(Pageable pagination) {
         return repository.findAll(pagination).map( p ->  mapper.map(p, PaymentDto.class));
@@ -55,5 +59,13 @@ public class PaymentService {
     private Payment findById(Long id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Payment not found"));
     }
+
+    public void confirmPayment(Long id) {
+        var payment = this.findById(id);
+        payment.setStatus(Status.APPROVED);
+        repository.save(payment);
+        orderClient.confirmPayment(payment.getOrderId());
+    }
+
 
 }
