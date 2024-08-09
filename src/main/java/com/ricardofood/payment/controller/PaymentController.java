@@ -1,10 +1,13 @@
 package com.ricardofood.payment.controller;
 
 import com.ricardofood.payment.dto.PaymentDto;
+import com.ricardofood.payment.enums.PaymentQueueName;
 import com.ricardofood.payment.service.PaymentService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +22,9 @@ public class PaymentController {
 
     @Autowired
     private PaymentService service;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @GetMapping
     public Page<PaymentDto> findAll(@PageableDefault(size = 10) Pageable pagination) {
@@ -37,6 +43,9 @@ public class PaymentController {
         var dto = service.create(paymentDto);
 
         var uri = uriBuilder.path("/payments/{id}").buildAndExpand(dto.getId()).toUri();
+        var message = new Message("New payment created with id: ".concat(dto.getId().toString()).getBytes());
+        rabbitTemplate.send(PaymentQueueName.PAYMENT_COMPLETED.getName(), message);
+
         return ResponseEntity.created(uri).body(dto);
     }
 
