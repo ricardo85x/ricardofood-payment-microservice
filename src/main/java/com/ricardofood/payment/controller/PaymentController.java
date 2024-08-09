@@ -1,12 +1,11 @@
 package com.ricardofood.payment.controller;
 
+import com.ricardofood.payment.constants.PaymentExchangeName;
 import com.ricardofood.payment.dto.PaymentDto;
-import com.ricardofood.payment.constants.PaymentQueueName;
 import com.ricardofood.payment.service.PaymentService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -43,7 +42,7 @@ public class PaymentController {
         var dto = service.create(paymentDto);
         var uri = uriBuilder.path("/payments/{id}").buildAndExpand(dto.getId()).toUri();
 
-        rabbitTemplate.convertAndSend(PaymentQueueName.PAYMENT_COMPLETED, dto);
+        rabbitTemplate.convertAndSend(PaymentExchangeName.PAYMENT_EXCHANGE, "", dto);
         return ResponseEntity.created(uri).body(dto);
     }
 

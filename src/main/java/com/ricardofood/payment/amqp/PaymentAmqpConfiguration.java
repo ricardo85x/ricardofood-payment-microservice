@@ -1,5 +1,7 @@
 package com.ricardofood.payment.amqp;
 
+import com.ricardofood.payment.constants.PaymentExchangeName;
+import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -14,11 +16,6 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 
 @Configuration
 public class PaymentAmqpConfiguration {
-
-    @Bean
-    public Queue createQueue() {
-        return QueueBuilder.nonDurable(PaymentQueueName.PAYMENT_COMPLETED).build();
-    }
 
     @Bean
     public RabbitAdmin createRabbitAdmin(ConnectionFactory conn) {
@@ -41,4 +38,10 @@ public class PaymentAmqpConfiguration {
         rabbitTemplate.setMessageConverter(jackson2JsonMessageConverter);
         return rabbitTemplate;
     }
+
+    @Bean
+    public FanoutExchange fanoutExchange() {
+        return new FanoutExchange(PaymentExchangeName.PAYMENT_EXCHANGE);
+    }
+
 }
