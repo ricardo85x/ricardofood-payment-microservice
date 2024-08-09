@@ -8,14 +8,14 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.ricardofood.payment.enums.PaymentQueueName;
+import com.ricardofood.payment.constants.PaymentQueueName;
 
 @Configuration
 public class PaymentAmqpConfiguration {
 
     @Bean
     public Queue createQueue() {
-        return QueueBuilder.nonDurable(PaymentQueueName.PAYMENT_COMPLETED.getName()).build();
+        return QueueBuilder.nonDurable(PaymentQueueName.PAYMENT_COMPLETED).build();
     }
 
     @Bean

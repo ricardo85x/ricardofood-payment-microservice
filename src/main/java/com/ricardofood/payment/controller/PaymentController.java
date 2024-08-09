@@ -1,7 +1,7 @@
 package com.ricardofood.payment.controller;
 
 import com.ricardofood.payment.dto.PaymentDto;
-import com.ricardofood.payment.enums.PaymentQueueName;
+import com.ricardofood.payment.constants.PaymentQueueName;
 import com.ricardofood.payment.service.PaymentService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.validation.Valid;
@@ -44,7 +44,7 @@ public class PaymentController {
 
         var uri = uriBuilder.path("/payments/{id}").buildAndExpand(dto.getId()).toUri();
         var message = new Message("New payment created with id: ".concat(dto.getId().toString()).getBytes());
-        rabbitTemplate.send(PaymentQueueName.PAYMENT_COMPLETED.getName(), message);
+        rabbitTemplate.send(PaymentQueueName.PAYMENT_COMPLETED, message);
 
         return ResponseEntity.created(uri).body(dto);
     }
