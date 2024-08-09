@@ -1,10 +1,12 @@
 package com.ricardofood.payment.controller;
 
+import com.ricardofood.payment.constants.PaymentExchangeName;
 import com.ricardofood.payment.dto.PaymentDto;
 import com.ricardofood.payment.service.PaymentService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,9 @@ public class PaymentController {
 
     @Autowired
     private PaymentService service;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @GetMapping
     public Page<PaymentDto> findAll(@PageableDefault(size = 10) Pageable pagination) {
@@ -35,8 +40,9 @@ public class PaymentController {
     @PostMapping
     public ResponseEntity<PaymentDto> create(@RequestBody @Valid PaymentDto paymentDto, UriComponentsBuilder uriBuilder) {
         var dto = service.create(paymentDto);
-
         var uri = uriBuilder.path("/payments/{id}").buildAndExpand(dto.getId()).toUri();
+
+        rabbitTemplate.convertAndSend(PaymentExchangeName.PAYMENT_EXCHANGE, "", dto);
         return ResponseEntity.created(uri).body(dto);
     }
 
