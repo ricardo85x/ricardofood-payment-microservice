@@ -41,11 +41,9 @@ public class PaymentController {
     @PostMapping
     public ResponseEntity<PaymentDto> create(@RequestBody @Valid PaymentDto paymentDto, UriComponentsBuilder uriBuilder) {
         var dto = service.create(paymentDto);
-
         var uri = uriBuilder.path("/payments/{id}").buildAndExpand(dto.getId()).toUri();
-        var message = new Message("New payment created with id: ".concat(dto.getId().toString()).getBytes());
-        rabbitTemplate.send(PaymentQueueName.PAYMENT_COMPLETED, message);
 
+        rabbitTemplate.convertAndSend(PaymentQueueName.PAYMENT_COMPLETED, dto);
         return ResponseEntity.created(uri).body(dto);
     }
 
