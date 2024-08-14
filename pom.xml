@@ -10,7 +10,7 @@
 	</parent>
 	<properties>
 		<java.version>17</java.version>
-		<app.version>1.0.0</app.version>
+		<app.version>1.0.1</app.version>
 	</properties>
 	<groupId>com.ricardofood</groupId>
 	<artifactId>payment</artifactId>
