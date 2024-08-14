@@ -17,7 +17,7 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_URL:http://localhost:8081/eureka}
 server:
-  port: 0
+  port: ${PAYMENT_PORT:0}
 
 resilience4j:
   circuitbreaker:
