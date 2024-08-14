@@ -13,6 +13,8 @@ spring:
     password: ${RABBITMQ_PASSWORD:guest}
 
 eureka:
+  instance:
+    preferIpAddress: true
   client:
     service-url:
       defaultZone: ${EUREKA_URL:http://localhost:8081/eureka}
